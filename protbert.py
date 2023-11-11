@@ -223,7 +223,7 @@ class GOTermTagger(pl.LightningModule):
 		return loss
 
 	def configure_optimizers(self):
-		optimizer = AdamW(self.parameters(), lr=3e-6, eps=1e-8)
+		optimizer = torch.optim.AdamW(self.parameters(), lr=3e-6, eps=1e-8)
 		# optimizer = Lamb(self.parameters(), lr=0.002, weight_decay=0.01)
 		scheduler = get_linear_schedule_with_warmup(
 			optimizer,
