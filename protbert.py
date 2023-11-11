@@ -286,7 +286,7 @@ trainer = pl.Trainer(
 	max_epochs=N_EPOCHS,
 	val_check_interval=valid_df.shape[0] // BATCH_SIZE,
 	devices=1,
-	accelerator="cpu",
+	accelerator="gpu",
 )
 
 trainer.fit(model, data_module)
