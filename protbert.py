@@ -69,6 +69,12 @@ def prepare_dataset(datapath, term_sets=('mf',), seq_size_limit=SEQ_SIZE_LIMIT):
 		valid_df = df[df['is_valid']].reset_index(drop=True).drop(columns=['is_train', 'is_valid'])
 		test_df = valid_df.copy()
 
+	# convert train, valid and test dataframes to csv
+	data_store = datapath.split(".")[0]
+	train_df.to_csv(f"{data_store}_train.csv", index=False)
+	valid_df.to_csv(f"{data_store}_valid.csv", index=False)
+	test_df.to_csv(f"{data_store}_test.csv", index=False)
+
 	weights = torch.FloatTensor((train_df.iloc[:, 1:].sum().sum() - train_df.iloc[:, 1:].sum()) / train_df.iloc[:, 1:].sum())
 	return train_df, valid_df, test_df, num_classes, all_terms, weights
 
