@@ -78,10 +78,10 @@ pdb_chain_path = "pdb_chain.xlsx"
 train_df, valid_df, test_df, num_classes, LABEL_COLUMNS, weights = prepare_dataset(pdb_chain_path, term_sets=['mf', "bp", "cc"])
 
 # concat pdb and swiss datasets
-s_train_df, s_valid_df, s_test_df, s_num_classes, s_LABEL_COLUMNS, s_weights = prepare_dataset('swiss_chain.xlsx', term_sets=['mf', 'bp', 'cc'])
-train_df = pd.concat([train_df, s_train_df], join="inner", ignore_index=True)
-test_df = pd.concat([test_df, s_test_df], join="inner", ignore_index=True)
-valid_df = pd.concat([valid_df, s_valid_df], join="inner", ignore_index=True)
+#s_train_df, s_valid_df, s_test_df, s_num_classes, s_LABEL_COLUMNS, s_weights = prepare_dataset('swiss_chain.xlsx', term_sets=['mf', 'bp', 'cc'])
+#train_df = pd.concat([train_df, s_train_df], join="inner", ignore_index=True)
+#test_df = pd.concat([test_df, s_test_df], join="inner", ignore_index=True)
+#valid_df = pd.concat([valid_df, s_valid_df], join="inner", ignore_index=True)
 
 # train_df, valid_df, test_df, num_classes, LABEL_COLUMNS = prepare_dataset('swiss_chain.xlsx', term_sets=['bp'])
 # train_df, valid_df, test_df, num_classes, LABEL_COLUMNS = prepare_dataset('swiss_chain.xlsx', term_sets=['cc'])
