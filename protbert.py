@@ -329,7 +329,7 @@ print("model freezer")
 torch.cuda.empty_cache()
 print("cache free")
 
-device = torch.device('cuda:3' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 trained_model = trained_model.to(device)
 
 val_dataset = ProteinSequenceDataset(
