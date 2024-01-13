@@ -1,7 +1,6 @@
 PRE_TRAINED_MODEL_NAME = 'Rostlab/prot_bert' # 'Rostlab/prot_bert_bfd_localization'
 MAX_LEN = 512
 SEQ_SIZE_LIMIT = 1000
-BATCH_SIZE = 8
 N_EPOCHS = 1
 
 import argparse
@@ -10,6 +9,7 @@ parser = argparse.ArgumentParser()
 
 # State the number of GPUs
 parser.add_argument('--n_gpus', type=int, default=1, help='Number of GPUs')
+parser.add_argument("--BATCH_SIZE", type=int, default=1)
 args = parser.parse_args()
 
 import re
@@ -222,7 +222,7 @@ class GOTermTagger(pl.LightningModule):
 		attention_mask = batch["attention_mask"]
 		labels = batch["labels"]
 		loss, outputs = self(input_ids, attention_mask, labels)
-		self.log("train_loss", loss, prog_bar=True, logger=True, batch_size=BATCH_SIZE)
+		self.log("train_loss", loss, prog_bar=True, logger=True, batch_size=args.BATCH_SIZE)
 		return {"loss": loss, "predictions": outputs.detach(), "labels": labels.detach()}
 
 	def validation_step(self, batch, batch_idx):
@@ -230,7 +230,7 @@ class GOTermTagger(pl.LightningModule):
 		attention_mask = batch["attention_mask"]
 		labels = batch["labels"]
 		loss, outputs = self(input_ids, attention_mask, labels)
-		self.log("val_loss", loss, prog_bar=True, logger=True, batch_size=BATCH_SIZE)
+		self.log("val_loss", loss, prog_bar=True, logger=True, batch_size=args.BATCH_SIZE)
 		return loss
 
 	def test_step(self, batch, batch_idx):
@@ -238,7 +238,7 @@ class GOTermTagger(pl.LightningModule):
 		attention_mask = batch["attention_mask"]
 		labels = batch["labels"]
 		loss, outputs = self(input_ids, attention_mask, labels)
-		self.log("test_loss", loss, prog_bar=True, logger=True, batch_size=BATCH_SIZE)
+		self.log("test_loss", loss, prog_bar=True, logger=True, batch_size=args.BATCH_SIZE)
 		return loss
 
 	def configure_optimizers(self):
@@ -267,11 +267,11 @@ data_module = GOTermsDataModule(
 	valid_df,
 	test_df,
 	tokenizer,
-	batch_size=BATCH_SIZE,
+	batch_size=args.BATCH_SIZE,
 	max_token_len=MAX_LEN
 )
 
-steps_per_epoch = train_df.shape[0] // BATCH_SIZE
+steps_per_epoch = train_df.shape[0] // args.BATCH_SIZE
 total_training_steps = steps_per_epoch * N_EPOCHS
 warmup_steps = steps_per_epoch
 
@@ -304,7 +304,7 @@ trainer = pl.Trainer(
 	callbacks=[early_stopping_callback, checkpoint_callback],
 	max_epochs=N_EPOCHS,
     # MODIFIED val_check_interval=valid_df.shape[0] // BATCH_SIZE
-	val_check_interval=valid_df.shape[0] // BATCH_SIZE,
+	val_check_interval=valid_df.shape[0] // args.BATCH_SIZE,
 	devices=args.n_gpus,
 	accelerator="gpu",
     strategy="ddp"
@@ -407,7 +407,7 @@ f1_score_micro = report["micro avg"]["f1-score"]
 
 # store the scores with parameters
 with open("scores.txt", "a") as f:
-    f.write(f"batch: {BATCH_SIZE}, max_token_len: {MAX_LEN}, epoch:{N_EPOCHS}, learning_rate: {learning_rate}, f1_weighted: {f1_score_weighted}, f1_micro: {f1_score_micro}")
+    f.write(f"batch: {args.BATCH_SIZE}, max_token_len: {MAX_LEN}, epoch:{N_EPOCHS}, learning_rate: {learning_rate}, f1_weighted: {f1_score_weighted}, f1_micro: {f1_score_micro}")
     f.write("\n")
 
 print(f"N_epochs: {N_EPOCHS}")
