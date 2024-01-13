@@ -4,6 +4,14 @@ SEQ_SIZE_LIMIT = 1000
 BATCH_SIZE = 8
 N_EPOCHS = 1
 
+import argparse
+
+parser = argparse.ArgumentParser()
+
+# State the number of GPUs
+parser.add_argument('--n_gpus', type=int, default=1, help='Number of GPUs')
+args = parser.parse_args()
+
 import re
 import time
 import os
@@ -290,14 +298,14 @@ logger = TensorBoardLogger("lightning_logs", name="go-terms")
 
 early_stopping_callback = EarlyStopping(min_delta=1e-5, monitor='val_loss', patience=2)
 
-# replace "gpus=1" parameter with these new two: "devices=1", "accelerator=gpu"
+# replaced "gpus=1" parameter with these new two: "devices=1", "accelerator=gpu"
 trainer = pl.Trainer(
 	logger=logger,
 	callbacks=[early_stopping_callback, checkpoint_callback],
 	max_epochs=N_EPOCHS,
     # MODIFIED val_check_interval=valid_df.shape[0] // BATCH_SIZE
 	val_check_interval=valid_df.shape[0] // BATCH_SIZE,
-	devices=4,
+	devices=args.n_gpus,
 	accelerator="gpu",
     strategy="ddp"
 )
